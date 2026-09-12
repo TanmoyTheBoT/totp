@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(
     TOTPManager
-    VERSION 1.0
+    VERSION 0.0.1
     LANGUAGES CXX C
 )
 
@@ -13,6 +13,10 @@ project(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(MSVC)
+    add_compile_options(/Zc:__cplusplus)
+endif()
 
 # =====================================
 # Qt
@@ -26,6 +30,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     Core
     Gui
     Widgets
+    Network
 )
 
 # =====================================
@@ -33,6 +38,17 @@ find_package(Qt6 REQUIRED COMPONENTS
 # =====================================
 
 qt_add_executable(${PROJECT_NAME})
+
+# =====================================
+# Resources
+# =====================================
+
+qt_add_resources(${PROJECT_NAME} "app_resources"
+    PREFIX "/"
+    BASE "resources"
+    FILES
+        resources/icons/app.png
+)
 
 # =====================================
 # Source Files
@@ -44,18 +60,36 @@ PRIVATE
 # Application
 app/main.cpp
 
+# ================= Version =================
+
+src/version.h
+
 # ================= UI =================
 
 src/ui/MainWindow.cpp
 src/ui/MainWindow.h
+
+# Dialogs
 src/ui/dialogs/AddAccountDialog.cpp
 src/ui/dialogs/AddAccountDialog.h
+src/ui/dialogs/ShowQRDialog.cpp
+src/ui/dialogs/ShowQRDialog.h
+src/ui/dialogs/SettingsDialog.cpp
+src/ui/dialogs/SettingsDialog.h
+src/ui/dialogs/DeleteConfirmDialog.cpp
+src/ui/dialogs/DeleteConfirmDialog.h
+src/ui/dialogs/ImportExportDialog.cpp
+src/ui/dialogs/ImportExportDialog.h
+src/ui/dialogs/AboutDialog.cpp
+src/ui/dialogs/AboutDialog.h
 
-# Future UI
-# src/ui/AboutDialog.cpp
-# src/ui/AboutDialog.h
-# src/ui/QRDialog.cpp
-# src/ui/QRDialog.h
+# Widgets
+src/ui/widgets/AccountCard.h
+src/ui/widgets/AccountCard.cpp
+src/ui/widgets/AccountCard_icons.cpp
+
+# Styles
+src/ui/styles/darktheme.h
 
 # ================= Core =================
 
@@ -136,6 +170,7 @@ PRIVATE
 Qt6::Core
 Qt6::Gui
 Qt6::Widgets
+Qt6::Network
 -fstack-protector
 )
 
@@ -154,10 +189,18 @@ endif()
 # Output
 # =====================================
 
+# Detect architecture
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(ARCH "win64")
+else()
+    set(ARCH "win32")
+endif()
+
+# Professional executable name with version and architecture
 set_target_properties(${PROJECT_NAME}
 PROPERTIES
-RUNTIME_OUTPUT_DIRECTORY
-${PROJECT_SOURCE_DIR}/bin
+    OUTPUT_NAME "TOTPManager-v${PROJECT_VERSION}-${ARCH}"
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
 )
 
 # =====================================

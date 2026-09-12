@@ -23,6 +23,12 @@ public:
 
     int period;
 
+    std::string notes;
+
+    bool favorite;
+
+    std::string iconPath;  // URL or local file path to icon
+
 
     Account()
     {
@@ -30,6 +36,9 @@ public:
         digits = 6;
         period = 30;
         algorithm = "SHA1";
+        notes = "";
+        favorite = false;
+        iconPath = "";
     }
 
 

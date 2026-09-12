@@ -86,7 +86,11 @@ bool Database::createTables()
 
         digits INTEGER DEFAULT 6,
 
-        period INTEGER DEFAULT 30
+        period INTEGER DEFAULT 30,
+
+        notes TEXT DEFAULT '',
+
+        favorite INTEGER DEFAULT 0
 
     );
 
@@ -146,10 +150,13 @@ bool Database::addAccount(
         secret,
         algorithm,
         digits,
-        period
+        period,
+        notes,
+        favorite,
+        iconPath
     )
 
-    VALUES(?,?,?,?,?,?);
+    VALUES(?,?,?,?,?,?,?,?,?);
 
     )";
 
@@ -225,6 +232,30 @@ bool Database::addAccount(
     );
 
 
+    sqlite3_bind_text(
+        stmt,
+        7,
+        account.notes.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+
+    sqlite3_bind_int(
+        stmt,
+        8,
+        account.favorite ? 1 : 0
+    );
+
+    sqlite3_bind_text(
+        stmt,
+        9,
+        account.iconPath.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+
 
     bool success =
         sqlite3_step(stmt)
@@ -263,7 +294,13 @@ bool Database::updateAccount(
 
         digits=?,
 
-        period=?
+        period=?,
+
+        notes=?,
+
+        favorite=?,
+
+        iconPath=?
 
     WHERE id=?;
 
@@ -338,9 +375,32 @@ bool Database::updateAccount(
     );
 
 
-    sqlite3_bind_int(
+    sqlite3_bind_text(
         stmt,
         7,
+        account.notes.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+
+    sqlite3_bind_int(
+        stmt,
+        8,
+        account.favorite ? 1 : 0
+    );
+
+    sqlite3_bind_text(
+        stmt,
+        9,
+        account.iconPath.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+    sqlite3_bind_int(
+        stmt,
+        10,
         account.id
     );
 
@@ -461,6 +521,23 @@ std::vector<Account> Database::getAccounts()
                 stmt,
                 6
             );
+
+
+        // ponytail: check column exists before reading (handles old DBs)
+        if (sqlite3_column_count(stmt) > 7) {
+            const unsigned char* notesText = sqlite3_column_text(stmt, 7);
+            acc.notes = notesText ? reinterpret_cast<const char*>(notesText) : "";
+        }
+
+
+        if (sqlite3_column_count(stmt) > 8) {
+            acc.favorite = sqlite3_column_int(stmt, 8) == 1;
+        }
+
+        if (sqlite3_column_count(stmt) > 9) {
+            const unsigned char* iconText = sqlite3_column_text(stmt, 9);
+            acc.iconPath = iconText ? reinterpret_cast<const char*>(iconText) : "";
+        }
 
 
         accounts.push_back(acc);
