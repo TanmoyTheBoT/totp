@@ -1,11 +1,31 @@
 #ifndef APP_VERSION_RC_H
 #define APP_VERSION_RC_H
 
-#define VER_FILEVERSION             0,0,1,0
-#define VER_FILEVERSION_STR         "0.0.1.0"
+// Auto-generate version from CMakeLists.txt PROJECT_VERSION
+// CMake will define these via command line: -DAPP_VERSION_MAJOR=0 -DAPP_VERSION_MINOR=0 -DAPP_VERSION_PATCH=1
 
-#define VER_PRODUCTVERSION          0,0,1,0
-#define VER_PRODUCTVERSION_STR      "0.0.1"
+#ifndef APP_VERSION_MAJOR
+#define APP_VERSION_MAJOR 0
+#endif
+
+#ifndef APP_VERSION_MINOR
+#define APP_VERSION_MINOR 0
+#endif
+
+#ifndef APP_VERSION_PATCH
+#define APP_VERSION_PATCH 1
+#endif
+
+// Helper macros to convert version to comma-separated and string format
+#define VER_FILEVERSION             APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH,0
+#define VER_PRODUCTVERSION          APP_VERSION_MAJOR,APP_VERSION_MINOR,APP_VERSION_PATCH,0
+
+// Stringify helper macros
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#define VER_FILEVERSION_STR         TOSTRING(APP_VERSION_MAJOR) "." TOSTRING(APP_VERSION_MINOR) "." TOSTRING(APP_VERSION_PATCH) ".0"
+#define VER_PRODUCTVERSION_STR      TOSTRING(APP_VERSION_MAJOR) "." TOSTRING(APP_VERSION_MINOR) "." TOSTRING(APP_VERSION_PATCH)
 
 #define VER_COMPANYNAME_STR         "TanmoyTheBoT"
 #define VER_FILEDESCRIPTION_STR     "TOTP Manager - Secure 2FA Authentication"

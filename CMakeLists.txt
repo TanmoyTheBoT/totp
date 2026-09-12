@@ -186,6 +186,13 @@ if(WIN32)
         PROPERTIES
         WIN32_EXECUTABLE TRUE
     )
+
+    # Pass version to resource file
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        APP_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+        APP_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+        APP_VERSION_PATCH=${PROJECT_VERSION_PATCH}
+    )
 endif()
 
 # =====================================
