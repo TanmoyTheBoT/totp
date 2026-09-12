@@ -22,12 +22,6 @@ jobs:
         target: 'desktop'
         arch: 'win64_mingw'
         modules: 'qtnetworkauth'
-        tools: 'tools_mingw1120 qt.tools.mingw1120'
-
-    - name: Add MinGW to PATH
-      shell: bash
-      run: |
-        echo "$IQTA_TOOLS/mingw1120_64/bin" >> $GITHUB_PATH
 
     - name: Configure CMake
       shell: bash
