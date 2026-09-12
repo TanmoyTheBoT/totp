@@ -181,7 +181,7 @@ Qt6::Network
 if(WIN32)
     set_target_properties(${PROJECT_NAME}
         PROPERTIES
-        WIN32_EXECUTABLE FALSE
+        WIN32_EXECUTABLE TRUE
     )
 endif()
 
