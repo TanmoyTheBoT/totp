@@ -60,6 +60,9 @@ PRIVATE
 # Application
 app/main.cpp
 
+# Resources
+resources/app.rc
+
 # ================= Version =================
 
 src/version.h
