@@ -51,9 +51,23 @@ jobs:
     - name: Sign executable
       shell: pwsh
       run: |
+        # Create self-signed certificate
         $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=TanmoyTheBoT" -CertStoreLocation Cert:\CurrentUser\My
+
+        # Export and import to Trusted Root to establish chain
         $certPath = "Cert:\CurrentUser\My\$($cert.Thumbprint)"
-        Set-AuthenticodeSignature -FilePath "bin\TOTPManager-*.exe" -Certificate (Get-Item $certPath) -TimestampServer "http://timestamp.digicert.com"
+        $tempCert = "$env:TEMP\tempcert.cer"
+        Export-Certificate -Cert $certPath -FilePath $tempCert
+        Import-Certificate -FilePath $tempCert -CertStoreLocation Cert:\CurrentUser\Root
+
+        # Sign with timestamp
+        $signResult = Set-AuthenticodeSignature -FilePath "bin\TOTPManager-*.exe" -Certificate (Get-Item $certPath) -TimestampServer "http://timestamp.digicert.com"
+
+        # Verify signature
+        Write-Host "Signature Status: $($signResult.Status)"
+        if ($signResult.Status -ne 'Valid') {
+          Write-Warning "Signature status: $($signResult.Status) - $($signResult.StatusMessage)"
+        }
 
     - name: Package
       shell: bash
