@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
+# Set RC compiler before project() - use wrapper to handle spaces in path
+if(WIN32 AND MINGW)
+    set(CMAKE_RC_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/windres_wrapper.bat")
+endif()
+
 project(
     TOTPManager
     VERSION 0.0.1
@@ -16,6 +21,19 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(MSVC)
     add_compile_options(/Zc:__cplusplus)
+endif()
+
+# =====================================
+# Version Info for Windows RC
+# =====================================
+
+if(WIN32)
+    # Pass version to resource compiler via compile definitions
+    add_compile_definitions(
+        APP_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+        APP_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+        APP_VERSION_PATCH=${PROJECT_VERSION_PATCH}
+    )
 endif()
 
 # =====================================
@@ -60,8 +78,8 @@ PRIVATE
 # Application
 app/main.cpp
 
-# Resources
-resources/app.rc
+# Resources (skip RC file for now - causes issues with windres and paths with spaces)
+# resources/app_nopreprocess.rc
 
 # ================= Version =================
 

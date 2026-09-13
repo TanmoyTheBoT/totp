@@ -1,4 +1,5 @@
 bin/
+app_nopreprocess.rc
 
 # Prerequisites
 *.d

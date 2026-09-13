@@ -48,6 +48,13 @@ jobs:
           echo "VERSION=v1.0.0" >> $GITHUB_OUTPUT
         fi
 
+    - name: Sign executable
+      shell: pwsh
+      run: |
+        $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=TanmoyTheBoT" -CertStoreLocation Cert:\CurrentUser\My
+        $certPath = "Cert:\CurrentUser\My\$($cert.Thumbprint)"
+        Set-AuthenticodeSignature -FilePath "bin\TOTPManager-*.exe" -Certificate (Get-Item $certPath) -TimestampServer "http://timestamp.digicert.com"
+
     - name: Package
       shell: bash
       run: |
